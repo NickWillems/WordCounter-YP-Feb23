@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  wordcounter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: wordcounter-history-db
+      DB_PORT: 5432
+    ports:
+      - "9999:9999"
+    depends_on:
+      wordcounter-history-db:
+        condition: service_healthy
+    networks:
+      - wordcounter-network
+
+  wordcounter-history-db:
+    image: postgres:14.2
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "wordcounter-history-db", "-U", "postgres" ]
+      timeout: 45s
+      interval: 3s
+      retries: 25
+    restart: always
+    ports:
+      - "9998:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wordcounter-history-db
+    volumes:
+      - "wordcounter_history_db_data:/var/lib/postgresql/data/"
+    networks:
+      - wordcounter-network
+
+volumes:
+  wordcounter_history_db_data:
+
+networks:
+  wordcounter-network:
+    name: wordcounter-network
+    driver: bridge
