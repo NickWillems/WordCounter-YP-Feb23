@@ -23,6 +23,10 @@ public class GenericObjectConverter implements AttributeConverter<Object, String
 
     @Override
     public Object convertToEntityAttribute(final String object) {
-        throw new RuntimeException("convertToEntityAttribute not implemented");
+        try {
+            return objectMapper.readValue(object, Object.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

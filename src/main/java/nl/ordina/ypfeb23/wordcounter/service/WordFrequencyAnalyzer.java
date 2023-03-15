@@ -7,7 +7,6 @@ import java.util.*;
 
 @Service
 public class WordFrequencyAnalyzer {
-
     /**
      * Find the word with the highest frequency in full text string
      * Could be multiple words
