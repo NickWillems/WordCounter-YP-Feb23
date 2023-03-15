@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active:
+      - tc
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     url: jdbc:tc:postgresql:14.2:///test-database

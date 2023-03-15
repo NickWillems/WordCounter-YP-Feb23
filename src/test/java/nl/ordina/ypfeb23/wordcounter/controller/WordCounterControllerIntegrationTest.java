@@ -1,54 +1,70 @@
 package nl.ordina.ypfeb23.wordcounter.controller;
 
-
-import nl.ordina.ypfeb23.wordcounter.service.HistoryLogger;
+import nl.ordina.ypfeb23.wordcounter.TestUtil;
+import nl.ordina.ypfeb23.wordcounter.repository.LoggingRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-
-//@Profile("test")
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class WordCounterControllerIntegrationTest {
-//    @Autowired
-//    private WebApplicationContext webApplicationContext;
-
-    @Mock
-    HistoryLogger historyLogger;
-
     @Autowired
     private MockMvc mockMvc;
 
-//    @Before
-//    public void setUp() {
-//        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-//    }
-
-//    @Autowired
-//    @InjectMocks
-//    private WordCounterController testSubject;
+    @MockBean
+    LoggingRepository loggingRepository;
 
     @Test
-    void test() throws Exception {
-        System.out.println();
-//        var request = MockMvcRequestBuilders.post("/api/highest-frequency");
-//        request.content("input text");
-        this.mockMvc.perform(get("/api/test"))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
+    void shouldPerformRequest() throws Exception {
+        // Arrange
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/highest-frequency");
+        request.content(TestUtil.DEFAULT_TEST_STRING);
+        request.header("Content-Type", "text/plain");
+
+        // Act
+        final ResultActions resultActions = this.mockMvc.perform(request);
+
+        // Assert
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk());
+        resultActions.andExpect(MockMvcResultMatchers.content().string("4"));
+    }
+
+    @Test
+    void shouldCallLoggingRepository() throws Exception {
+        // Arrange
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/highest-frequency");
+        request.content(TestUtil.DEFAULT_TEST_STRING);
+        request.header("Content-Type", "text/plain");
+
+        // Act
+        final ResultActions resultActions = this.mockMvc.perform(request);
+
+        // Assert
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk());
+        Mockito.verify(loggingRepository, Mockito.times(1)).save(Mockito.any());
+    }
+
+    @Test
+    void shouldNotPerformRequest_unsupportedMediaType() throws Exception {
+        // Arrange
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/highest-frequency");
+        request.content(TestUtil.DEFAULT_TEST_STRING);
+        request.header("Content-Type", "audio/wave");
+
+        // Act
+        final ResultActions resultActions = this.mockMvc.perform(request);
+
+        // Assert
+        resultActions.andExpect(MockMvcResultMatchers.status().isUnsupportedMediaType());
     }
 }

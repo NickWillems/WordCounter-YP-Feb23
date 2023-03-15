@@ -14,15 +14,10 @@ import java.util.Map;
 
 
 @RequiredArgsConstructor
-@RestController(value = "/api")
+@RestController
 public class WordCounterController {
     private final WordFrequencyAnalyzer wordFrequencyAnalyzer;
     private final HistoryLogger historyLogger;
-
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("HOI");
-    }
 
     @PostMapping(
             path = "/highest-frequency",
