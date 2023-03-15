@@ -7,20 +7,22 @@ import nl.ordina.ypfeb23.wordcounter.service.WordFrequencyAnalyzer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
 
 @RequiredArgsConstructor
-@RestController("/api")
+@RestController(value = "/api")
 public class WordCounterController {
     private final WordFrequencyAnalyzer wordFrequencyAnalyzer;
     private final HistoryLogger historyLogger;
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("HOI");
+    }
 
     @PostMapping(
             path = "/highest-frequency",

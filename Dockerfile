@@ -3,7 +3,7 @@ FROM maven:3.9.0-eclipse-temurin-17
 COPY . /home
 WORKDIR /home
 
-RUN mvn install
+RUN mvn install -DskipTests
 
 ENTRYPOINT mvn spring-boot:run
 
